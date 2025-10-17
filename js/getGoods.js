@@ -1,5 +1,6 @@
 const getGoods = () => {
     const links = document.querySelectorAll('.navigation-link')
+    const viewAll = document.querySelector('.more')
 
     const renderGoods = (goods) => {
 
@@ -58,6 +59,13 @@ const getGoods = () => {
             getData(linkValue, category)
         })
     })
+
+    if (viewAll) {
+        viewAll.addEventListener('click', (e) => {
+            e.preventDefault()
+            getData()
+        })
+    }
 
     if (localStorage.getItem('goods') && window.location.pathname === '/goods.html') {
         renderGoods(JSON.parse(localStorage.getItem('goods')))
