@@ -37,7 +37,7 @@ const getGoods = () => {
             .then((res) => res.json())
             .then((data) => {
 
-                const array = category ? data.filter((item) => item[category] === value) : data
+                const array = category ? data.filter(item => item[category] === value) : data
 
                 localStorage.setItem('goods', JSON.stringify(array))
 
