@@ -5,6 +5,7 @@ const cart = () => {
     const goodsContainer = document.querySelector('.long-goods-list')
     const cartTable = document.querySelector('.cart-table__goods')
     const form = document.querySelector('.modal-form')
+    const modal = document.querySelector('.modal')
 
     const addToCart = (id) => {
         const goods = JSON.parse(localStorage.getItem('goods'))
@@ -39,6 +40,7 @@ const cart = () => {
 
         localStorage.setItem('cart', JSON.stringify(newCart))
         renderCartGoods(JSON.parse(localStorage.getItem('cart')))
+        totalPrice(JSON.parse(localStorage.getItem('cart')))
     }
 
     const minusCartItem = (id) => {
@@ -56,6 +58,7 @@ const cart = () => {
 
         localStorage.setItem('cart', JSON.stringify(newCart))
         renderCartGoods(JSON.parse(localStorage.getItem('cart')))
+        totalPrice(JSON.parse(localStorage.getItem('cart')))
     }
 
     const deleteCartItem = (id) => {
@@ -67,6 +70,7 @@ const cart = () => {
 
         localStorage.setItem('cart', JSON.stringify(newCart))
         renderCartGoods(JSON.parse(localStorage.getItem('cart')))
+        totalPrice(JSON.parse(localStorage.getItem('cart')))
     }
 
 
@@ -89,13 +93,10 @@ const cart = () => {
 
             tr.addEventListener('click', (e) => {
                 if (e.target.classList.contains('cart-btn-minus')) {
-                    console.log('минус')
                     minusCartItem(good.id)
                 } else if (e.target.classList.contains('cart-btn-plus')) {
-                    console.log('плюс')
                     plusCartItem(good.id)
                 } else if (e.target.classList.contains('cart-btn-delete')) {
-                    console.log('удалить')
                     deleteCartItem(good.id)
                 }
             })
@@ -104,17 +105,49 @@ const cart = () => {
 
     const sendForm = () => {
         const cartArray = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : []
+        const modalInputs = form.querySelectorAll('.modal-input')
+        let userName
+        let userPhone
+
+        modalInputs.forEach(modalInput => {
+            if (modalInput.name === 'nameCustomer') {
+                userName = modalInput.value
+            } else if (modalInput.name === 'phoneCustomer') {
+                userPhone = modalInput.value
+            }
+        })
 
         fetch('https://jsonplaceholder.typicode.com/posts', {
             method: 'POST',
             body: JSON.stringify({
                 cart: cartArray,
-                name: '',
-                phone: ''
+                name: userName,
+                phone: userPhone
             })
         }).then(() => {
+            clearForm()
             modalCart.style.display = ""
         })
+    }
+
+    const clearForm = () => {
+        const modalInputs = form.querySelectorAll('.modal-input')
+        modalInputs.forEach(modalInput => {
+            modalInput.value = ''
+        })
+    }
+
+    const totalPrice = (goods) => {
+        const total = document.querySelector('.card-table__total')
+        let totalSum = 0
+        total.textContent = ''
+
+
+        goods.forEach((good) => {
+            totalSum += +good.price * +good.count
+        })
+
+        total.textContent = totalSum
     }
 
     form.addEventListener('submit', (e) => {
@@ -125,6 +158,7 @@ const cart = () => {
     cartBtn.addEventListener('click', () => {
         const cartArray = localStorage.getItem('cart') ? JSON.parse(localStorage.getItem('cart')) : []
         renderCartGoods(cartArray)
+        totalPrice(cartArray)
         modalCart.style.display = 'flex'
     })
 
